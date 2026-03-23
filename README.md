@@ -269,10 +269,4 @@ LLMCouncil/
 - [ ] Streaming responses
 - [ ] Export to PDF/Markdown
 
-## License
 
-MIT License
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
