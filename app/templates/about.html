@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}About - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="about-page">
+    <h1>About Vision : The LLM Council</h1>
+    
+    <section class="about-section">
+        <h2>What is Vision : The LLM Council?</h2>
+        <p>
+            Vision : The LLM Council is a multi-LLM collaborative reasoning system that simulates 
+            an expert committee solving problems together. Instead of relying on a 
+            single AI model, it orchestrates multiple models with different roles 
+            to generate higher-quality, more reliable answers through structured 
+            deliberation.
+        </p>
+    </section>
+    
+    <section class="about-section">
+        <h2>The Deliberation Process</h2>
+        
+        <div class="process-steps">
+            <div class="process-step">
+                <h3>Stage 1: Role-Based Responses</h3>
+                <p>
+                    Each council member (LLM) receives the user's query along with 
+                    their assigned role description. They generate responses from 
+                    their unique perspective:
+                </p>
+                <ul>
+                    <li><strong>Researcher:</strong> Provides factual background and explanations</li>
+                    <li><strong>Critic:</strong> Identifies weaknesses and challenges assumptions</li>
+                    <li><strong>Creative Thinker:</strong> Suggests innovative ideas and alternatives</li>
+                    <li><strong>Practical Advisor:</strong> Focuses on actionable implementation</li>
+                </ul>
+            </div>
+            
+            <div class="process-step">
+                <h3>Stage 2: Anonymous Peer Review</h3>
+                <p>
+                    Each model reviews responses from other council members without 
+                    knowing which model generated them. This ensures unbiased evaluation 
+                    based on content quality rather than model reputation.
+                </p>
+                <p>Reviewers score each response on:</p>
+                <ul>
+                    <li>Accuracy (30%)</li>
+                    <li>Completeness (25%)</li>
+                    <li>Reasoning Quality (25%)</li>
+                    <li>Clarity (20%)</li>
+                </ul>
+            </div>
+            
+            <div class="process-step">
+                <h3>Stage 3: Multi-Round Improvement</h3>
+                <p>
+                    After receiving peer feedback and seeing other perspectives, 
+                    each council member has the opportunity to revise and improve 
+                    their response. This simulates how human experts refine their 
+                    opinions after hearing diverse viewpoints.
+                </p>
+            </div>
+            
+            <div class="process-step">
+                <h3>Stage 4: Weighted Consensus Scoring</h3>
+                <p>
+                    Peer review scores are aggregated into weighted scores for each 
+                    response. Higher-scoring responses have more influence on the 
+                    final synthesis. The system also calculates an overall consensus 
+                    score indicating how much agreement exists among council members.
+                </p>
+            </div>
+            
+            <div class="process-step">
+                <h3>Stage 5: Verifier Validation</h3>
+                <p>
+                    A dedicated Verifier LLM analyzes all responses to detect:
+                </p>
+                <ul>
+                    <li>Hallucinations (fabricated information)</li>
+                    <li>Factual errors</li>
+                    <li>Logical inconsistencies</li>
+                    <li>Contradictions between responses</li>
+                </ul>
+                <p>
+                    The verifier produces a reliability report that informs the 
+                    final synthesis.
+                </p>
+            </div>
+            
+            <div class="process-step">
+                <h3>Stage 6: Chairman Synthesis</h3>
+                <p>
+                    The Chairman LLM receives all role-based responses, peer review 
+                    scores, and the verification report. It synthesizes these into 
+                    a comprehensive final answer that:
+                </p>
+                <ul>
+                    <li>Weighs perspectives by their merit</li>
+                    <li>Addresses verified concerns</li>
+                    <li>Highlights consensus and disagreements</li>
+                    <li>Provides a clear, actionable conclusion</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <section class="about-section">
+        <h2>Key Features</h2>
+        <div class="features-list">
+            <div class="feature">
+                <h4>🎭 Role-Based Diversity</h4>
+                <p>Different roles ensure diverse perspectives on every query.</p>
+            </div>
+            <div class="feature">
+                <h4>🔒 Anonymous Review</h4>
+                <p>Unbiased peer review without model identity influence.</p>
+            </div>
+            <div class="feature">
+                <h4>🔄 Iterative Improvement</h4>
+                <p>Multiple rounds allow refinement based on feedback.</p>
+            </div>
+            <div class="feature">
+                <h4>⚖️ Weighted Scoring</h4>
+                <p>Merit-based contribution to final synthesis.</p>
+            </div>
+            <div class="feature">
+                <h4>✅ Error Detection</h4>
+                <p>Dedicated verification catches hallucinations and errors.</p>
+            </div>
+            <div class="feature">
+                <h4>📊 Transparency</h4>
+                <p>Full reasoning trace shows how answers were formed.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="about-section">
+        <h2>Technology Stack</h2>
+        <div class="tech-stack">
+            <div class="tech-item">
+                <h4>Backend</h4>
+                <p>Python, FastAPI</p>
+            </div>
+            <div class="tech-item">
+                <h4>LLM Access</h4>
+                <p>OpenRouter API (GPT-4, Claude, Llama, Mistral, etc.)</p>
+            </div>
+            <div class="tech-item">
+                <h4>Frontend</h4>
+                <p>Jinja2 Templates, HTML, CSS, JavaScript</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="about-section">
+        <h2>API Access</h2>
+        <p>
+            Vision : The LLM Council provides a full REST API for programmatic access. 
+            Visit <a href="/api/docs">/api/docs</a> for interactive API documentation.
+        </p>
+        <p>Key endpoints:</p>
+        <ul>
+            <li><code>POST /api/deliberate</code> - Run full deliberation</li>
+            <li><code>GET /api/session/{id}</code> - Get session data</li>
+            <li><code>GET /api/config</code> - Get configuration</li>
+            <li><code>GET /api/roles</code> - Get available roles</li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

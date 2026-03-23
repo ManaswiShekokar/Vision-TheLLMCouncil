@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}{{ app_name }} - Multi-LLM Collaborative Reasoning{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>🏛️ Vision : The LLM Council</h1>
+    <p class="hero-subtitle">Multi-LLM Collaborative Reasoning System</p>
+    <p class="hero-description">
+        Simulate an expert committee where multiple AI models collaborate 
+        through structured deliberation, peer review, and synthesis.
+    </p>
+    <a href="/deliberate" class="btn btn-primary btn-large">Start Deliberation</a>
+</div>
+
+<section class="features">
+    <h2>How It Works</h2>
+    
+    <div class="workflow-diagram">
+        <div class="workflow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3>Role-Based Responses</h3>
+                <p>Multiple LLMs generate initial responses based on their assigned roles.</p>
+            </div>
+        </div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3>Peer Review</h3>
+                <p>Each model reviews others anonymously, scoring accuracy and reasoning.</p>
+            </div>
+        </div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3>Improvement Round</h3>
+                <p>Models refine their responses based on feedback.</p>
+            </div>
+        </div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h3>Verification</h3>
+                <p>A Verifier checks for errors and hallucinations.</p>
+            </div>
+        </div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <h3>Final Synthesis</h3>
+                <p>The Chairman synthesizes all perspectives into the final answer.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="roles-section">
+    <h2>Council Roles</h2>
+    <div class="roles-grid">
+        {% for role_id, role in roles.items() %}
+        <div class="role-card">
+            <div class="role-icon">
+                {% if role_id == 'researcher' %}📚{% endif %}
+                {% if role_id == 'critic' %}🔍{% endif %}
+                {% if role_id == 'creative_thinker' %}💡{% endif %}
+                {% if role_id == 'practical_advisor' %}🛠️{% endif %}
+                {% if role_id == 'verifier' %}✅{% endif %}
+                {% if role_id == 'chairman' %}👔{% endif %}
+            </div>
+            <h3>{{ role.name }}</h3>
+            <p>{{ role.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="benefits-section">
+    <h2>Benefits</h2>
+    <div class="benefits-grid">
+        <div class="benefit-card">
+            <h3>🎯 Higher Quality</h3>
+            <p>Multiple perspectives and peer review produce more accurate, comprehensive answers.</p>
+        </div>
+        <div class="benefit-card">
+            <h3>🔬 Error Detection</h3>
+            <p>The Verifier catches hallucinations and factual errors before final synthesis.</p>
+        </div>
+        <div class="benefit-card">
+            <h3>📊 Transparency</h3>
+            <p>Full reasoning trace shows how the final answer was formed.</p>
+        </div>
+        <div class="benefit-card">
+            <h3>⚖️ Consensus Scoring</h3>
+            <p>Weighted scoring shows confidence and agreement levels.</p>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <h2>Ready to Try?</h2>
+    <p>Submit a question and watch the council deliberate.</p>
+    <a href="/deliberate" class="btn btn-primary">Start Now</a>
+</section>
+{% endblock %}

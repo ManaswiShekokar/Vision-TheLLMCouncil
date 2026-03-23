@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Session {{ session_id }} - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="session-page">
+    <h1>Session Details</h1>
+    <p class="session-id">Session ID: <code>{{ session_id }}</code></p>
+    
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading session data...</p>
+    </div>
+    
+    <div id="session-content" class="hidden">
+        <!-- Session details will be populated by JavaScript -->
+    </div>
+    
+    <div id="error-message" class="error-message hidden"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const sessionId = "{{ session_id }}";
+    
+    async function loadSession() {
+        try {
+            const response = await fetch(`/api/session/${sessionId}`);
+            if (!response.ok) {
+                throw new Error('Session not found');
+            }
+            
+            const data = await response.json();
+            displaySession(data);
+        } catch (error) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error-message').classList.remove('hidden');
+            document.getElementById('error-message').textContent = error.message;
+        }
+    }
+    
+    function displaySession(data) {
+        document.getElementById('loading').classList.add('hidden');
+        const content = document.getElementById('session-content');
+        content.classList.remove('hidden');
+        
+        const session = data.session;
+        const trace = data.reasoning_trace;
+        
+        let html = `
+            <div class="session-overview">
+                <h2>Query</h2>
+                <p class="query-text">${session.query}</p>
+                
+                <div class="session-meta">
+                    <span>Stage: <strong>${session.current_stage}</strong></span>
+                    <span>Created: ${new Date(session.created_at).toLocaleString()}</span>
+                    <span>Tokens Used: ${session.total_tokens_used}</span>
+                </div>
+            </div>
+        `;
+        
+        if (session.chairman_synthesis) {
+            html += `
+                <div class="result-card final-answer-card">
+                    <div class="card-header">
+                        <h3>Final Answer</h3>
+                        <span class="consensus-badge">${session.chairman_synthesis.consensus_score}% Consensus</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="final-answer">${formatText(session.chairman_synthesis.final_answer)}</div>
+                        <p><strong>Confidence:</strong> ${session.chairman_synthesis.confidence_level}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        html += `
+            <div class="result-card">
+                <h3>Initial Responses</h3>
+                <div class="responses-grid">
+        `;
+        
+        for (const [role, response] of Object.entries(session.initial_responses || {})) {
+            html += `
+                <div class="response-card">
+                    <h4>${response.role_name}</h4>
+                    <p class="model-used">Model: ${response.model_used}</p>
+                    <div class="response-text">${formatText(response.response)}</div>
+                </div>
+            `;
+        }
+        
+        html += `</div></div>`;
+        
+        if (session.verification_report) {
+            const ver = session.verification_report;
+            html += `
+                <div class="result-card">
+                    <h3>Verification Report</h3>
+                    <div class="verification-content">
+                        <p><strong>Reliability Score:</strong> ${ver.overall_reliability_score}%</p>
+                        <p><strong>Confidence:</strong> ${ver.confidence_assessment}</p>
+                        ${ver.hallucination_flags.length > 0 ? 
+                            `<p><strong>Hallucination Flags:</strong> ${ver.hallucination_flags.join(', ')}</p>` : ''}
+                        ${ver.factual_errors.length > 0 ? 
+                            `<p><strong>Factual Errors:</strong> ${ver.factual_errors.join(', ')}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        html += `
+            <div class="result-card">
+                <h3>Reasoning Trace</h3>
+                <div class="trace-timeline">
+        `;
+        
+        for (const step of trace) {
+            html += `
+                <div class="trace-step">
+                    <div class="step-marker">${step.step}</div>
+                    <div class="step-info">
+                        <strong>${step.stage}</strong>
+                        <pre>${JSON.stringify(step.data, null, 2)}</pre>
+                    </div>
+                </div>
+            `;
+        }
+        
+        html += `</div></div>`;
+        
+        content.innerHTML = html;
+    }
+    
+    function formatText(text) {
+        if (!text) return '';
+        return text
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>');
+    }
+    
+    loadSession();
+</script>
+{% endblock %}

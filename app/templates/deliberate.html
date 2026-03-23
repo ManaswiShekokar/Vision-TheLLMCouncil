@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Deliberate - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="deliberate-page">
+    <h1>🏛️ Council Deliberation</h1>
+    
+    <div class="query-section">
+        <form id="query-form">
+            <div class="form-group">
+                <label for="query">Your Question</label>
+                <textarea 
+                    id="query" 
+                    name="query" 
+                    placeholder="Enter your question or topic for the council to deliberate..."
+                    rows="4"
+                    required
+                ></textarea>
+            </div>
+            
+            <div class="options-toggle">
+                <button type="button" class="btn btn-secondary btn-small" onclick="toggleOptions()">
+                    Advanced Options ▼
+                </button>
+            </div>
+            
+            <div id="advanced-options" class="advanced-options hidden">
+                <div class="options-grid">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="enable-peer-review" checked>
+                            Enable Peer Review
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="enable-verification" checked>
+                            Enable Verification
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="deliberation-rounds">Improvement Rounds</label>
+                        <select id="deliberation-rounds">
+                            <option value="1" selected>1 Round</option>
+                            <option value="2">2 Rounds</option>
+                            <option value="3">3 Rounds</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="model-config">
+                    <h4>Model Configuration (Optional)</h4>
+                    <div class="model-grid">
+                        {% for role_id, role in roles.items() %}
+                        <div class="form-group">
+                            <label for="model-{{ role_id }}">{{ role.name }}</label>
+                            <select id="model-{{ role_id }}" class="model-select" data-role="{{ role_id }}">
+                                <option value="">Default</option>
+                                {% for model in models %}
+                                <option value="{{ model.id }}">{{ model.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-large" id="submit-btn">
+                    Start Deliberation
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Progress Section -->
+    <div id="progress-section" class="progress-section hidden">
+        <h2>Deliberation Progress</h2>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-stages">
+            <div class="stage" id="stage-initial">
+                <span class="stage-icon">1</span>
+                <span class="stage-name">Initial Responses</span>
+            </div>
+            <div class="stage" id="stage-review">
+                <span class="stage-icon">2</span>
+                <span class="stage-name">Peer Review</span>
+            </div>
+            <div class="stage" id="stage-improve">
+                <span class="stage-icon">3</span>
+                <span class="stage-name">Improvement</span>
+            </div>
+            <div class="stage" id="stage-verify">
+                <span class="stage-icon">4</span>
+                <span class="stage-name">Verification</span>
+            </div>
+            <div class="stage" id="stage-synthesis">
+                <span class="stage-icon">5</span>
+                <span class="stage-name">Synthesis</span>
+            </div>
+        </div>
+        <p class="progress-status" id="progress-status">Starting deliberation...</p>
+    </div>
+    
+    <!-- Results Section -->
+    <div id="results-section" class="results-section hidden">
+        <h2>Deliberation Results</h2>
+        
+        <!-- Final Answer -->
+        <div class="result-card final-answer-card">
+            <div class="card-header">
+                <h3>👔 Chairman's Final Answer</h3>
+                <div class="consensus-badge" id="consensus-badge">
+                    <span class="consensus-score">--</span>% Consensus
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="final-answer" id="final-answer"></div>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <span class="metric-label">Confidence</span>
+                        <span class="metric-value" id="confidence-level">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Processing Time</span>
+                        <span class="metric-value" id="processing-time">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Key Points -->
+        <div class="result-card" id="key-points-card">
+            <div class="card-header">
+                <h3>📌 Key Points</h3>
+            </div>
+            <div class="card-content">
+                <ul id="key-points-list"></ul>
+            </div>
+        </div>
+        
+        <!-- Tabs for detailed results -->
+        <div class="results-tabs">
+            <button class="tab-btn active" data-tab="responses">Role Responses</button>
+            <button class="tab-btn" data-tab="reviews">Peer Reviews</button>
+            <button class="tab-btn" data-tab="improved">Improved Responses</button>
+            <button class="tab-btn" data-tab="verification">Verification</button>
+            <button class="tab-btn" data-tab="trace">Reasoning Trace</button>
+        </div>
+        
+        <!-- Tab Contents -->
+        <div class="tab-content active" id="tab-responses">
+            <div class="responses-grid" id="responses-grid"></div>
+        </div>
+        
+        <div class="tab-content" id="tab-reviews">
+            <div class="reviews-container" id="reviews-container"></div>
+        </div>
+        
+        <div class="tab-content" id="tab-improved">
+            <div class="improved-grid" id="improved-grid"></div>
+        </div>
+        
+        <div class="tab-content" id="tab-verification">
+            <div class="verification-report" id="verification-report"></div>
+        </div>
+        
+        <div class="tab-content" id="tab-trace">
+            <div class="reasoning-trace" id="reasoning-trace"></div>
+        </div>
+        
+        <!-- Agreement/Disagreement -->
+        <div class="agreement-section">
+            <div class="result-card">
+                <div class="card-header">
+                    <h3>✅ Areas of Agreement</h3>
+                </div>
+                <div class="card-content">
+                    <ul id="agreement-list"></ul>
+                </div>
+            </div>
+            <div class="result-card">
+                <div class="card-header">
+                    <h3>⚠️ Areas of Disagreement</h3>
+                </div>
+                <div class="card-content">
+                    <ul id="disagreement-list"></ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- New Deliberation -->
+        <div class="new-deliberation">
+            <button class="btn btn-secondary" onclick="resetForm()">New Deliberation</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/deliberate.js"></script>
+{% endblock %}
